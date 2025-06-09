@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bhagavad Gita AI Search</title>
+  <style>
+    :root {
+      --primary: #2a4d69;
+      --accent: #4a90e2;
+      --bg: #f5f7fa;
+      --text: #333;
+      --card: #ffffff;
+      --label: #2a4d69;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --radius: 12px;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 2rem 1rem;
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--primary);
+      margin-bottom: 2rem;
+      font-size: 2rem;
+    }
+
+    form {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      max-width: 700px;
+      margin: 0 auto 2rem auto;
+      padding: 0 1rem;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 0.8rem 1rem;
+      font-size: 1rem;
+      border: 2px solid var(--primary);
+      border-radius: var(--radius);
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--accent);
+    }
+
+    button {
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: var(--radius);
+      background: var(--primary);
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: var(--accent);
+    }
+
+    .results-section {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
+    .section-title {
+      color: var(--label);
+      font-size: 1.2rem;
+      margin-top: 2rem;
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 0.3rem;
+    }
+
+    .verse-card {
+      background: var(--card);
+      box-shadow: var(--shadow);
+      padding: 1.2rem 1.5rem;
+      margin: 1rem 0;
+      border-radius: var(--radius);
+    }
+
+    .chapter-verse {
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+      color: #1b2a49;
+    }
+
+    .text {
+      font-size: 1.1rem;
+      margin: 0.5rem 0;
+      white-space: pre-line;
+    }
+
+    .label {
+      font-weight: 600;
+      display: inline-block;
+      margin-top: 0.6rem;
+      color: var(--label);
+    }
+
+    .sentiment {
+      font-style: italic;
+      font-size: 0.9rem;
+      color: #777;
+      margin-top: 0.5rem;
+    }
+
+    @media (max-width: 600px) {
+      form {
+        flex-direction: column;
+      }
+
+      input[type="text"], button {
+        width: 100%;
+      }
+
+      button {
+        margin-top: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Bhagavad Gita Search</h1>
+
+  <form method="post" action="/">
+    <input type="text" name="query" placeholder="Search by meaning, word, or emotion..." value="{{ user_query|e }}" required />
+    <button type="submit">Search</button>
+  </form>
+
+  {% if user_query %}
+    <div class="results-section">
+      <h2 class="section-title">Results for: "{{ user_query|e }}"</h2>
+
+      <h3 class="section-title">🔍 Direct Matches ({{ matched_verses|length }})</h3>
+      {% if matched_verses %}
+        {% for v in matched_verses %}
+          <div class="verse-card">
+            <div class="chapter-verse">Chapter {{ v.chapter }}, Verse {{ v.verse }}</div>
+            <div class="text">{{ v.text }}</div>
+            <div><span class="label">Transliteration:</span> {{ v.transliteration }}</div>
+            <div><span class="label">Word Meanings:</span> {{ v.word_meanings }}</div>
+            <div><span class="label">Translation:</span> {{ v.translation }}</div>
+            <div class="sentiment">Sentiment score: {{ "%.2f"|format(v.sentiment) }}</div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>No direct matches found.</p>
+      {% endif %}
+
+      <h3 class="section-title">💡 Sentiment Matches ({{ sentiment_verses|length }})</h3>
+      {% if sentiment_verses %}
+        {% for v in sentiment_verses %}
+          <div class="verse-card">
+            <div class="chapter-verse">Chapter {{ v.chapter }}, Verse {{ v.verse }}</div>
+            <div class="text">{{ v.text }}</div>
+            <div><span class="label">Transliteration:</span> {{ v.transliteration }}</div>
+            <div><span class="label">Word Meanings:</span> {{ v.word_meanings }}</div>
+            <div><span class="label">Translation:</span> {{ v.translation }}</div>
+            <div class="sentiment">Sentiment score: {{ "%.2f"|format(v.sentiment) }}</div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>No sentiment-based matches found.</p>
+      {% endif %}
+    </div>
+  {% endif %}
+
+</body>
+</html>
